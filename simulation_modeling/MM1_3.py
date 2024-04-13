@@ -38,12 +38,13 @@ def customer_generator(env,counter):
         Customer(env,counter,n,env.now) 
 
 def update_total_time(waiting_time):
-    global total_time
+    total_time=statistics.get('total_time')
     total_time += waiting_time
-
+    statistics.update({'total_time':total_time})
+    
 def update_num_customers(customer_id): 
-    global num_customers 
     num_customers = customer_id+1
+    statistics.update({'num_customers':num_customers}) 
 
 # main program 
 
@@ -55,9 +56,8 @@ Y = []
 
 for i in X: 
 
-    total_time = 0 # total waiting time for customers who entered service
-    num_customers = 0 # the number of customers who entered service
-
+    statistics = {'total_time' : 0, 'num_customers' : 0}
+    
     env=simpy.Environment()
 
     counter = simpy.Resource(env, capacity=1)
@@ -66,6 +66,9 @@ for i in X:
 
     env.run(running_time)
 
+    total_time = statistics.get('total_time')
+    num_customers = statistics.get('num_customers')
+    
     Y.append(total_time/num_customers)
 
 plt.plot(X,Y,"-o")

@@ -41,19 +41,24 @@ def customer_generator(env,counter):
         Customer(env,counter,n,env.now) 
 
 def update_total_time(waiting_time):
-    global total_time
+    total_time=statistics.get('total_time')
     total_time += waiting_time
-
+    statistics.update({'total_time':total_time})
+    
 def update_num_customers(customer_id): 
-    global num_customers 
     num_customers = customer_id+1
+    statistics.update({'num_customers':num_customers}) 
+
 
 # main program 
 
 random.seed(random_seed)
 
-total_time = 0 # total waiting time for customers who entered service
-num_customers = 0 # the number of customers who entered service
+# statistics to collect:
+# total_time - total waiting time (only for customers who enter the service) 
+# num_customers - total number of customers who enter the service
+
+statistics = {'total_time' : 0, 'num_customers' : 0}
 
 env=simpy.Environment()
     
@@ -63,4 +68,8 @@ env.process(customer_generator(env,counter))
     
 env.run(running_time)
 
+total_time = statistics.get('total_time')
+num_customers = statistics.get('num_customers')
+
+print('The total number of customers entering the service:',num_customers)
 print('Average waiting time:%0.2f'%(total_time/num_customers))
